@@ -1,0 +1,5 @@
+name: 'wcb Dimmer Driver'
+packageKey: 'wcbDimmerDriver'
+permissions:
+  lan: {}
+  discovery: {}
