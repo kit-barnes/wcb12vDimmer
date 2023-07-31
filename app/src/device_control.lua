@@ -28,13 +28,15 @@ end
 
 -- LED Switch Control
 function led_switch_ctl(on_off)
-  if on_off == 'off' then			-- leave state.lvl unchanged
-    state.on_off = 'off'			--   but turn off light
-	  return pwm2.set_duty(PIN_PWM, 0)
-  elseif state.lvl == 0 then
-    return led_lvl_ctl(PWM_STEPS) -- full on
-  end
-  return led_lvl_ctl(state.lvl)
+	state.on_off = on_off
+	if on_off == 'off' then			-- leave state.lvl unchanged
+		pwm2.set_duty(PIN_PWM, 0)
+	else	-- turn on
+		if state.lvl == 0 then
+			state.lvl = PWM_STEPS	 -- full on
+		end
+		led_lvl_ctl(state.lvl)
+	end
 end
 
 
@@ -63,7 +65,7 @@ local function onButtonTime()
 		longpress = false
 		steptimer:stop()
 		-- report to hub (only when done)
-		push_state(state)
+		push_state({switch=state.on_off, level=state.lvl})
 	end
 end
 steptimer:register(BUTTON_TIME, tmr.ALARM_AUTO, onButtonTime)

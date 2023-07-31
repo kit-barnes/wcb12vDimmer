@@ -23,7 +23,7 @@ end
 -- Query String Parser
 local function qsparse(str)
   local res = {}
-  for k,v in str:gmatch('([%w%-_]+)=([%w%+%-_!@#%$%%%^]+)') do
+  for k,v in str:gmatch('([%w-_]+)=([%w+-_!@#$%^]+)') do
     res[k:lower()] = v
   end
   return res
