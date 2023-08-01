@@ -36,7 +36,7 @@ function command_handler.refresh(_, device)
     --local raw_data = json.decode(table.concat(data))
 ---@diagnostic disable-next-line: param-type-mismatch
     local raw_data = json.decode(table.concat(data)..'}')
-    local calc_lvl = math.floor((raw_data.lvl * 100)/255)
+    local calc_lvl = raw_data.lvl
 
     -- Define online status
     device:online()
