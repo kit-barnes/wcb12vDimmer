@@ -27,7 +27,7 @@ DEV = {
   NAME='wcb12vDimmer',
   TYPE='LAN',
   ext_uuid=nil,
-  state = { on_off='off', lvl=0, clr={r=50,g=50,b=50,},},
+  state = { on_off='off', lvl=0,},
   HUB = { addr=nil, port=nil },
 }
 

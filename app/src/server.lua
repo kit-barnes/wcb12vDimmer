@@ -41,7 +41,7 @@ end
 
 --------------------
 -- Push Remote State
-function push_state(data)
+function push_state()
   print('push_state called')
   if not DEV.HUB.addr or not DEV.HUB.port then
     print('NO HUB REGISTERED')
@@ -52,7 +52,12 @@ function push_state(data)
   local url = string.format(
     'http://%s:%s/push-state', DEV.HUB.addr, DEV.HUB.port)
   -- JSONstringify table
+  local data = {}
   data.uuid = DEV.HUB.ext_uuid
+  data.level = DEV.state.lvl
+  if data.level == 0 then data.switch = 'off'
+  else data.switch = 'on'
+  end
   local data = sjson.encode(data)
 
   print('PUSH STATE\r\nURL:  '..url..
@@ -129,15 +134,12 @@ function server_start()
     -- control either at the ST App
     -- or at browsers
     elseif httpdata.status:find('/control') then
-      local push_data = nil
       -- Switch
       if qs.switch then
         led_switch_ctl(qs.switch)
-        push_data = {switch=qs.switch}
       -- Switch Level
       elseif qs.level then
         led_lvl_ctl(tonumber(qs.level))
-        push_data = {level=qs.level}
       end
 
       -- If request came from
@@ -147,13 +149,10 @@ function server_start()
         -- Hub for bidirectional
         -- comms (device built-in
         -- /control page).
-        if push_data ~= nil then
-          push_state(push_data)
-        end
+        push_state()
 
         conn:send(
           res.ok_200(res.CONTROL_VIEW))
-        push_data = nil
         collectgarbage()
         return
       end
@@ -161,7 +160,7 @@ function server_start()
       -- for socket comm
       -- on /control
       return conn:send(
-        res.ok_200())
+        res.ok_200(tostring(DEV.state.lvl)))
     else
       -- wifi setting default
       conn:send(

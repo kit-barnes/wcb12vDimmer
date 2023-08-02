@@ -65,7 +65,7 @@ local function onButtonTime()
 		longpress = false
 		steptimer:stop()
 		-- report to hub (only when done)
-		push_state({switch=state.on_off, level=state.lvl})
+		push_state()
 	end
 end
 steptimer:register(BUTTON_TIME, tmr.ALARM_AUTO, onButtonTime)
