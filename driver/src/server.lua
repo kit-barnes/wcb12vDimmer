@@ -19,7 +19,8 @@ function hub_server.start(driver)
     local device = driver:get_device_info(body.uuid)
     if body.switch then
       driver:on_off(device, body.switch)
-    elseif body.level then
+    end
+    if body.level then
       driver:set_level(device, tonumber(body.level))
     end
     res:send('HTTP/1.1 200 OK')
