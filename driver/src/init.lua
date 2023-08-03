@@ -18,7 +18,6 @@ local driver =
       supported_capabilities = {
         caps.switch,
         caps.switchLevel,
-        caps.colorControl,
         caps.refresh
       },
       capability_handlers = {

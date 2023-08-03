@@ -52,14 +52,8 @@ function push_state()
   local url = string.format(
     'http://%s:%s/push-state', DEV.HUB.addr, DEV.HUB.port)
   -- JSONstringify table
-  local data = {}
-  data.uuid = DEV.HUB.ext_uuid
-  data.level = DEV.state.lvl
-  if data.level == 0 then data.switch = 'off'
-  else data.switch = 'on'
-  end
-  local data = sjson.encode(data)
-
+  DEV.state.uuid = DEV.HUB.ext_uuid
+  local data = sjson.encode(DEV.state)
   print('PUSH STATE\r\nURL:  '..url..
         '\r\nDATA: '..data)
   return http.post(
@@ -159,8 +153,7 @@ function server_start()
       -- Simple Response
       -- for socket comm
       -- on /control
-      return conn:send(
-        res.ok_200(tostring(DEV.state.lvl)))
+      return conn:send(res.ok_200(DEV.state))
     else
       -- wifi setting default
       conn:send(
