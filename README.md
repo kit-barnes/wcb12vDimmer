@@ -1,71 +1,74 @@
-# Sample Edge Driver for ESP8266 Light bulb
+# wcb12vDimmer - Device & SmartThings driver
+Created in response to Samsung's  ending support for Groovey drivers. While I think I can write an edge driver to work with my original Smart Led Dimmer firmware, I decided it would be quicker to modify the [Sample Edge Driver for ESP8266 Light bulb](https://github.com/SmartThingsDevelopers/SampleDrivers/tree/main/lightbulb-lan-esp8266) (and I was in a hurry to get my lights working again).
 
-Model: NodeMCU ESP8266
+![Development Setup](devSetup230804.jpg)
 
-Protocol: LAN
+This version is less capable than the original in that it has no provision for fade/brighten rate adjustment or for OTA updates.  I tried to include the update capability as I did for my similar [Xmas Lites](https://kit-barnes.github.io/Kits_Project_Website/XmasLites/index.htm) device, but frustratingly, I have not been able to LFS working in the new NodeMCU build required.
+## Device
+The device hardware is identical to my [Smart LED Dimmer](https://kit-barnes.github.io/Kits_Project_Website/smartLEDdimmer/index.htm) so I will not describe it here.
 
-## Prerequisites
+Firmware and Initial configuration:
+- Create a NodeMCU build from the master branch at https://nodemcu-build.com/ 
+  including modules:  file, gpio, http, net, node, pwm2, sjson, tmr, uart, and wifi or use the build in app/NodeMCU.
+- Load the float version into Adafruit HUZZAH ESP8266 module with [NodeMCU PyFlasher](https://github.com/marcelstoer/nodemcu-pyflasher) per this [Adafruit article](https://learn.adafruit.com/adafruit-huzzah-esp8266-breakout/using-nodemcu-lua).
+- Upload app/src files: config.lua, device_control.lua, init.lua, responses.lua, server.lua and upnp.lua to device with ESPlorer.
+- Reset or Reboot the device aand connect to its WiFi SSID: wcbDimmer Password: dummy123
+- Browse to http://192.168.4.1 and enter the ssid and password of the hub's WiFi.
 
-A SmartThings Hub with firmware version 38.x or greater and a LAN device ready to connect.
+## Driver
+Install the [SmartThings CLI](https://github.com/SmartThingsCommunity/smartthings-cli)
 
-For this tutorial, we used an ESP8266 but the same principles can be used to integrate any LAN-based device that supports SSDP and HTTP.
-
-1. Set up the SmartThings CLI according to the [configuration document](https://github.com/SmartThingsCommunity/smartthings-cli/blob/master/packages/cli/doc/configuration.md).
-2. Add the [Edge Driver plugin](https://github.com/SmartThingsCommunity/edge-alpha-cli-plugin#set-up) to the CLI.
-3. Configure your development environment for the [SmartThingsEdgeDrivers](https://github.com/SmartThingsCommunity/SmartThingsEdgeDriversBeta)
-
-## Uploading Your Driver to SmartThings
-
-_Note: Take a look at the installation tutorial in our [Developer's Community](https://community.smartthings.com/t/creating-drivers-for-zwave-devices-with-smartthings-edge/229503)._
-
-1. Compile the driver:
+### Uploading Your Driver to SmartThings
+- Compile the driver:
 
 ```
 smartthings edge:drivers:package driver/
 ```
 
-2. Create a channel for your driver
+- Create a channel for the driver
 
 ```
 smartthings edge:channels:create
 ```
 
-3. Enroll your driver into the channel
+- Enroll the driver into the channel
 
 ```
 smartthings edge:channels:enroll
 ```
 
-4. Publish your driver to the channel
+- Publish the driver to the channel
 
 ```
 smartthings edge:drivers:publish
 ```
 
-5. If the package was successfully created, you can call the command below and follow the on-screen prompts to install the Driver in your Hub:
+- Install the driver into the hub:
 
 ```
 smartthings edge:drivers:install
 ```
+- You should see the confirmation message: `Driver {driver-id} installed to Hub {hub-id}`
 
-You should see the confirmation message: `Driver {driver-id} installed to Hub {hub-id}`
+- Use your WiFi router or the [SmartThings IDE](https://account.smartthings.com/login) > My Hubs to locate and copy the IP Address for your Hub.
 
-6. Use your WiFi router or the [SmartThings IDE](https://account.smartthings.com/login) > My Hubs to locate and copy the IP Address for your Hub.
-
-7. From a computer on the same local network as your Hub, open a new terminal window and run the command to get the logs from all the installed drivers.
+- From a computer on the same local network as your Hub, open a new terminal window and run this command to get the log from your driver.
 
 ```
-smartthings edge:drivers:logcat --hub-address=x.x.x.x -a
+smartthings edge:drivers:logcat --hub-address=x.x.x.x {driver-id}
 ```
 
-## Onboarding your New Device
+## Onboarding (Connect device to SmartThings hub)
+Reset (or powercycle) the device.
 
-1. Setup the ESP8266 board and embedded app according to [these instructions](./app).
-2. Open the _SmartThings App_ and follow these steps _(notice that you must add the device in the same location your Hub is installed)_:
+Then, in the _SmartThings App_:
 
    - Select **Add (+)** and then **Device**.
-   - Tap on **Scan nearby** and check the logs emitted at your _logcat_ session.
+   - Tap on **Scan nearby**.
+   - The app should find the device and add it automatically, offering to take you to its assigned room.
 
-As soon as your device gets installed, the _Driver_ will send a
-periodic _Ping HTTP Requests_ with **IP and Port** reference of the server that will
-listen for external device updates at `X.X.X.X:XXXXX/push-state`.
+If the scan does not find the dimmer,
+- Ensure the hub and dimmer are connected to the same WiFi SSID
+- Powercycle the dimmer and try again -
+checkimg the _logcat_ session.
+
