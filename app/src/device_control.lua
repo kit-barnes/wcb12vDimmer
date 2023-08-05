@@ -1,8 +1,6 @@
 
 -- GPIO config
--- PIN_RED = 3
--- PIN_BLUE = 4
-PIN_BUTTON = 5
+local PIN_BUTTON = 5
 local PIN_PWM = 7		-- Dimmer output
 
 local PWM_FREQ = 800
@@ -11,6 +9,9 @@ local PWM_STEPS = 100
 local BUTTON_TIME = 250		-- 1/4 sec
 
 local state = DEV.state
+
+-- Init Pushbutton pin
+gpio.mode(PIN_BUTTON, gpio.INPUT , gpio.PULLUP)
 
 
 -- Init PWM pin

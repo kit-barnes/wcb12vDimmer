@@ -70,11 +70,6 @@ wifi.eventmon.register(
   end)
 
 
-if gpio.read(PIN_BUTTON) == gpio.LOW then	-- button pressed
-  print("Aborting before starting server")
-  return
-end
-
 --------------
 -- init server
 print("Starting server")

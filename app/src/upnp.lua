@@ -29,14 +29,15 @@ function upnp_start()
     local req = httpparse(payload)
     local headers = req.headers
 
-    print('INCOMING TRAFFIC:\r\n'..payload..'\r\n')
+    --print('INCOMING TRAFFIC:\r\n'..payload..'\r\n')
     if req and req.status:find('M-SEARCH') then
+      print('ST: '..headers.st)
       if headers.st:find(DEV.MN) and headers.st:find(DEV.NAME) then
-        --print('DISCOVERY STREAM:\r\n'..payload..'\r\n')
+        print('DISCOVERY STREAM:\r\n'..payload..'\r\n')
         print('SSDP RESPONSE:\r\n'..SSDP_RES..'\r\n')
-         --Send SSDP repsonse
+        --Send SSDP repsonse
         conn:send(port, ip, SSDP_RES)
-        SSDP_RES = nil
+        --SSDP_RES = nil
         req = nil
         collectgarbage()
       end
