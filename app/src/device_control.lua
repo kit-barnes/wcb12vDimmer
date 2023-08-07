@@ -72,8 +72,10 @@ end
 steptimer:register(BUTTON_TIME, tmr.ALARM_AUTO, onButtonTime)
 
 local function onButtonPressed(input, presstime, count)
-  print( 'Button pressed')
-  brighten = not brighten -- alternate step direction
-  steptimer:start()
+  if gpio.read(PIN_BUTTON) == gpio.LOW then  -- really pressed
+	print( 'Button pressed')
+	brighten = not brighten -- alternate step direction
+	steptimer:start()
+  end
 end
 gpio.trig(PIN_BUTTON, "down", onButtonPressed)
